@@ -258,7 +258,7 @@ The executable will be created in `dist/StAR/StAR`.
 ## Structure
 
 ```
-python/
+StAR/
 ├── star_gui.py                     ← unified tabbed GUI (entry point)
 ├── run/
 │   ├── preprocess.py               ← CLI PreProcess
@@ -293,6 +293,8 @@ python/
 └── cleanAll.sh                     ← Linux clean script
 └── StAR.sh                         ← Linux launch script
 └── StAR.bat                        ← Windows launch script
+└── README.md                       ← Readme file
+└── LICENSE                         ← License file
 ```
 
 ## Output data format
