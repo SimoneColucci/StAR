@@ -18,6 +18,7 @@ The stereology is based on:
 > *Existence and Approximation of Densities of Chord Length- and Cross Section Area Distributions*,
 > Image Analysis and Stereology, 42(3), 171-184.
 > https://doi.org/10.5566/ias.2923.
+
 > van der Jagt, T., Jongbloed, G., & Vittorietti, M. (2024)
 > *Stereological determination of particle size distributions for similar convex bodies*
 > Electronic Journal of Statistics, 18(1), 742-774.
