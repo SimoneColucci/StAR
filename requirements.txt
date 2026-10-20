@@ -1,0 +1,12 @@
+numpy>=1.21
+scipy>=1.7
+matplotlib>=3.5
+pandas>=1.3
+scikit-image>=0.19
+Pillow>=9.0
+pyinstaller>=5.0
+# The Stereology module additionally requires 'pysizeunfolder', which is NOT on
+# PyPI and needs git. It is kept out of this file so a missing git does not break
+# the core install. The launchers (StAR.sh / StAR.bat) and the build scripts
+# install it automatically (best effort). To install it manually:
+#   pip install git+https://github.com/thomasvdj/pysizeunfolder
