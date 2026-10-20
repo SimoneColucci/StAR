@@ -292,10 +292,10 @@ python/
 └── build_linux.sh                  ← Linux build script
 └── cleanAll.sh                     ← Linux clean script
 └── StAR.sh                         ← Linux launch script
-└── StAR.bat                         ← Windows launch script
+└── StAR.bat                        ← Windows launch script
 ```
 
-## Output
+## Output data format
 
 - **PNG** – labelled images,
             best-fitting distribution plots,
