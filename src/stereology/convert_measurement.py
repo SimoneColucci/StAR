@@ -71,7 +71,6 @@ def convert_measurement(my_measurement_path, output_dir=None):
 
     new_filename = out_dir / f"measurementsStereoTable_{suffix_number}.csv"
     pd.DataFrame({'EquivDiameter': diam_3D}).to_csv(new_filename, index=False)
-    print(f"Saved 3D reconstruction to {new_filename}")
 
     # Convert radius in diameter
     xxcdf_est = xcdf_est * 2.

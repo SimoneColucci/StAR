@@ -78,7 +78,7 @@ def run_analyze(img_data, technique):
     for i in range(n_files):
         fname = input_files[i]
         image_path = os.path.join(img_data['input_dir'], fname)
-        print(f'Analyzing image file "{image_path}".')
+        print(f'Analyzing {fname}')
 
         props, gray, boundaries, n_blobs = analyze_bubble(
             image_path, {'range': ranges[i]})
@@ -99,7 +99,6 @@ def run_analyze(img_data, technique):
         df.to_csv(csv_path, index=False)
         all_dfs.append(df)
         measure_names.append(base + '.csv')
-        print(f'  Saved {csv_path}')
 
         # ---- Plot labelled image ----------------------------------------
         fig, ax = plt.subplots()
@@ -127,6 +126,5 @@ def run_analyze(img_data, technique):
         groups = [{'name': 'Group 1', 'indices': list(range(n_files))}]
     rd_prop_fig = os.path.join(rd_measure, 'Figures')
     save_property_figures(all_dfs, measure_names, groups, rd_prop_fig)
-    print('Property figures saved to:', rd_prop_fig)
 
     print('\nDone. Results saved to:', rd_measure)

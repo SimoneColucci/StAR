@@ -94,7 +94,7 @@ def run_bubble_properties(measure_data, sample, method):
             nums = re.findall(r'\d+', filepath)
             num_arr[j] = int(nums[-1]) if nums else j
 
-            print(fname)
+            print(f'Statistical analysis of {fname}')
             print()
 
             equiv_diam = _load_equiv_diameter(filepath)
@@ -191,7 +191,6 @@ def run_bubble_properties(measure_data, sample, method):
                              columns=['group', 'alpha', 'beta', 'R2', 'Dc'])
         fi_csv = os.path.join(rd_stat, 'FractalIndex.csv')
         fi_df.to_csv(fi_csv, index=False)
-        print('Fractal index summary saved to:', fi_csv)
 
     plt.close('all')
     print('\nDone. Results saved to:', rd_stat)

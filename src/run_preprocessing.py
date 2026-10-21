@@ -60,8 +60,8 @@ def run_preprocessing(preprocess, img_data, interactors):
     csv_file = os.path.join(rd, 'preProcessingResults.csv')
     if data:
         pd.DataFrame([data]).to_csv(csv_file, index=False)
-        print(f'Results saved to {csv_file}')
     else:
         print('Warning: No data to save for CSV file.')
 
+    print('\nDone. Results saved to:', rd)
     return px2m, crop_area, i_range

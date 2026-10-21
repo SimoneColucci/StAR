@@ -155,7 +155,7 @@ def _fit_and_plot(x, y, Dc, group_name, num, out_dir):
     fig.savefig(fig_path, dpi=200, bbox_inches='tight')
     plt.close(fig)
     print(f'Fractal index (Otsuki, 1998): alpha={alpha:.3f}, '
-          f'beta={beta:.3f}, R2={r2:.4f}. Figure saved to {fig_path}')
+          f'beta={beta:.3f}, R2={r2:.4f}')
     return result
 
 

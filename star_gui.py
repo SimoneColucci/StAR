@@ -333,7 +333,6 @@ class CropDialog(tk.Toplevel):
         base, _ = os.path.splitext(self._save_path)
         save_path = base + '.jpg'
         Image.fromarray(cropped).save(save_path, quality=100)
-        print(f'Cropped image saved to: {save_path}')
 
         self._state = {'mask': mask}
         self.result = (area, self._state)

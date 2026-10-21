@@ -71,6 +71,5 @@ def stereology(my_measurement_path, output_dir=None):
     figure_path = out_dir / f"Stereology_{suffix_number}.png"
     fig.savefig(figure_path, dpi=300, bbox_inches="tight")
     plt.close(fig)
-    print(f"Saved figure to {figure_path}")
 
     return diam_3D

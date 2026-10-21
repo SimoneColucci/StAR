@@ -18,8 +18,6 @@ def check_input_properties(measure_data, sample, method):
     method : dict
         Must contain 'minsearch'.
     """
-    print('Checking input parameters...')
-
     # ---- Required fields ----------------------------------------------------
     _require(measure_data, 'input_dir',  'measureData.input_dir')
     _require(measure_data, 'output_dir', 'measureData.output_dir')
@@ -115,8 +113,6 @@ def check_input_properties(measure_data, sample, method):
             path = os.path.join(measure_data['input_dir'], fname)
             if not os.path.isfile(path):
                 raise FileNotFoundError(f'Input measurements file "{path}" not found.')
-
-    print('Input parameters ok!')
 
 
 def _require(d, key, display_name):
