@@ -1,5 +1,5 @@
 """
-Exceedance-based statistical analysis of bubble / crystal size distributions.
+Exceedance-based statistical analysis of particle size distributions.
 """
 
 import os
@@ -203,9 +203,9 @@ def exceedance_based_analysis(v, sample_new, method, rd, idx, num, mtype,
            color='steelblue', label='Data')
 
     if mtype[0] == '2D':
-        xlab = r'$\log_{10}(v)$, $v$ = bubble area (m$^2$)'
+        xlab = r'$\log_{10}(v)$, $v$ = particle area (m$^2$)'
     else:
-        xlab = r'$\log_{10}(v)$, $v$ = bubble volume (m$^3$)'
+        xlab = r'$\log_{10}(v)$, $v$ = particle volume (m$^3$)'
 
     xgrid = 10.0**np.linspace(bin_centers.min() - 2, bin_centers.max() + 1, 100)
     ax.plot(np.log10(xgrid), exponential_exceedance(p_exp, xgrid), 'b',  label='Exponential')
@@ -215,6 +215,25 @@ def exceedance_based_analysis(v, sample_new, method, rd, idx, num, mtype,
     ax.legend()
     ax.set_xlabel(xlab)
     ax.set_ylabel('Exceedance')
+
+    # Add the best exceedance fit to the second panel of the additional figure.
+    best_index = int(np.argmin([x2_exp, x2_wei, x2_nor, x2_log]))
+    best_exceedance, best_parameters, best_color, best_name = [
+        (exponential_exceedance, p_exp, 'b', 'Exponential'),
+        (weibull_exceedance, p_wei, 'r', 'Weibull'),
+        (normal_exceedance, p_nor, 'k', 'Normal'),
+        (logistic_exceedance, p_log, 'm', 'Logistic'),
+    ][best_index]
+    best_fig = plt.figure(-idx, figsize=(13.3, 5.3))
+    best_fig.patch.set_facecolor('white')
+    best_ax = best_fig.add_subplot(1, 2, 2)
+    best_ax.bar(bin_centers, Sprime, width=np.diff(bin_edges)[0] * 0.8,
+                color='steelblue', label='Data')
+    best_ax.plot(np.log10(xgrid), best_exceedance(best_parameters, xgrid),
+                 best_color, label=best_name)
+    best_ax.legend()
+    best_ax.set_xlabel(xlab)
+    best_ax.set_ylabel('Exceedance')
 
     # ---- Save table ---------------------------------------------------------
     table_data = {

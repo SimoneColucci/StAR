@@ -5,7 +5,7 @@ Equivalent of the MATLAB runAnalyzeBubble.m
 For every input image it performs threshold segmentation, measures the region
 properties, scales them to physical units using ``px2m`` and saves:
   - <output>/Measurements/measurementsTable_XXX.csv
-  - <output>/LabeledImages/bubbleLabel_XXX.png
+  - <output>/LabeledImages/<input_name>_label_XXX.<input_extension>
 
 After processing, frequency histograms of the measured properties are saved
 in <output>/Measurements/Figures. Files belonging to the same group are
@@ -109,7 +109,15 @@ def run_analyze(img_data, technique):
         for b in boundaries:
             ax.plot(b[:, 1], b[:, 0], 'y', linewidth=1)
         ax.axis('off')
-        fig_path = os.path.join(rd_fig, f'bubbleLabel_{i + 1:03d}.png')
+        image_name, image_ext = os.path.splitext(os.path.basename(fname))
+        name_prefix, separator, image_index = image_name.rpartition('_')
+        if separator and image_index.isdigit():
+            label_name = f'{name_prefix}_label_{image_index}'
+        else:
+            label_name = f'{image_name}_label'
+        if image_ext.lstrip('.').lower() not in fig.canvas.get_supported_filetypes():
+            image_ext = '.png'
+        fig_path = os.path.join(rd_fig, label_name + image_ext)
         fig.savefig(fig_path, dpi=150, bbox_inches='tight')
         plt.close(fig)
 

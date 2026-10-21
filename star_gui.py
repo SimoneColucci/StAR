@@ -674,11 +674,9 @@ class PreProcessTab(GroupTreeTab):
 
     def _build_options(self):
         self._info.configure(
-            text=('PreProcess: spatial calibration, cropping and intensity '
-                  'range selection of the images. Results are saved in '
-                  'preProcessingResults.csv and in the CropImages folder. '
-                  'Define the groups here: they are inherited by Analyze, '
-                  'Stereology and Properties.'))
+            text=('Spatial calibration of the image, by measuring the pixel distance corresponding to a known physical length; '
+                  'Cropping a region of the image; '
+                  'Calculation of the intensity threshold for image binarisation.'))
         opt = ttk.LabelFrame(self, text='Operations')
         opt.pack(fill='x', padx=8, pady=4)
         self._calib = tk.BooleanVar(value=True)
@@ -873,10 +871,8 @@ class AnalyzeTab(GroupTreeTab):
 
     def _build_options(self):
         self._info.configure(
-            text=('Analyze: threshold segmentation of the particles and '
-                  'measurement of their geometric properties. Segmented '
-                  'images are saved in LabeledImages/, properties are saved '
-                  'in Measurements/.'))
+            text=('Threshold-based segmentation of the image and '
+                  'measurement of particle geometric properties.'))
 
     def _file_values(self, img):
         return (_fmt_px2m(img.get('px2m')),
@@ -945,10 +941,7 @@ class StereologyTab(GroupTreeTab):
 
     def _build_options(self):
         self._info.configure(
-            text=('Stereology: stereological conversion of the 2D measures '
-                  'into 3D size distributions. Results of the stereological '
-                  'conversion are saved in Measurements. Optional module in '
-                  'the workflow.'))
+            text=('Stereological conversion of the 2D measures into 3D size distributions.'))
 
     def _supports_edit(self):
         return False
@@ -1310,8 +1303,7 @@ class PropertiesTab(GroupTreeTab):
 
     def _build_options(self):
         self._info.configure(
-            text=('Properties: statistical analysis of the size distributions '
-                  '(density + exceedance) with fitting of the distributions.'))
+            text=('Statistical analysis of the size distributions.'))
         opt = ttk.Frame(self)
         opt.pack(fill='x', padx=8, pady=4)
         ttk.Label(opt, text='Minimisation method:').pack(side='left')

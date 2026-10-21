@@ -9,6 +9,9 @@ Statistical formulation:
   https://doi.org/10.1016/j.jvolgeores.2007.04.007.
 """
 
+import csv
+import os
+
 from src.bubble_properties.statistics.distributions import (
     exponential_moments,
     weibull_moments,
@@ -50,38 +53,72 @@ def bubble_properties(bubble_dim, sample_new, method, rd, idx, num, mtype,
     # M*_Vm: moments per melt/matrix volume (normalized by volume of melt/matrix)
     # M*_Vtot: moments per total volume (normalized by total volume)
 
-    # Moments calculated using the best-fitting parameters from density-based analysis
-    I = int(X2d.argmin())
     moment_functions = [
         exponential_moments,
         weibull_moments,
         normal_moments,
         logistic_moments,
     ]
-    moment_function = moment_functions[I]
 
-    if I == 0:
-        moment_parameters = [0.0, Nud[I]]
+    Id = int(X2d.argmin())
+    moment_function = moment_functions[Id]
+    if Id == 0:
+        moment_parameters_d = [0.0, Nud[Id]]
     else:
-        moment_parameters = [0.0, Nud[I], Sigmad[I]]
+        moment_parameters_d = [0.0, Nud[Id], Sigmad[Id]]
 
-    M1_N = moment_function(moment_parameters, 1)         # V_p/N      - particle average volume
-    M1_Vm = M1_N*Alphad[I]                               # V_p/V_m
-    Phi = 1.0/(1.0+M1_Vm)                                # V_melt/V_tot
-    M1_Vtot = M1_Vm*Phi                                  # V_p/V_tot  - particle volume fraction
+    M1_Nd = moment_function(moment_parameters_d, 1)    # V_p/N      - particle average volume (density-based)
+    M1_Vm = M1_Nd*Alphad[Id]                            # V_p/V_m
+    Phi = 1.0/(1.0+M1_Vm)                              # V_melt/V_tot
+    M1_Vtot = M1_Vm*Phi                                # V_p/V_tot  - particle volume fraction
 
-    M0_Vm = Alphad[I]                                    # BND/CND per melt/matrix Volume
-    M0_Vtot = M0_Vm*Phi                                  # BND/CND per total volume
+    M0_Vm = Alphad[Id]                                 # BND/CND per melt/matrix Volume
+    M0_Vtot = M0_Vm*Phi                                # BND/CND per total volume
 
-    # Temporary diagnostic output
+    Ie = int(X2e.argmin())
+    moment_function = moment_functions[Ie]
+    if Ie == 0:
+        moment_parameters_e = [0.0, Nue[Ie]]
+    else:
+        moment_parameters_e = [0.0, Nue[Ie], Sigmae[Ie]]
+
+    M1_Ne = moment_function(moment_parameters_e, 1)    # V_p/N      - particle average volume (exceedance-based)
+
+    # Print results
+    def scientific(value):
+        mantissa, separator, exponent = f'{value:.3E}'.partition('E')
+        return f'{mantissa}E{int(exponent)}' if separator else mantissa
+
     distribution_names = ['Exponential', 'Weibull', 'Normal', 'Logistic']
-    print(f'Best density distribution: {distribution_names[I]} (I={I})')
-    print(f'M1_N={M1_N}, M1_Vm={M1_Vm}, M1_Vtot={M1_Vtot}')
-    print(f'M0_Vm={M0_Vm}, M0_Vtot={M0_Vtot}')
+    is_2d = mtype[0] == '2D'
+    measure = 'area' if is_2d else 'volume'
+    measure_unit = 'm²' if is_2d else 'm³'
+    density_unit = 'm⁻²' if is_2d else 'm⁻³'
+    fraction_unit = 'area %' if is_2d else 'vol %'
+    print('\n#### Properties of the particle population ####')
+    print(f'Best distribution density: {distribution_names[Id]}')
+    print(f'Best exceedance function: {distribution_names[Ie]}')
+    print(f'Average particle {measure} [{measure_unit}]: {M1_Nd:.3E} (density-based) - {M1_Ne:.3E} (exceedance-based)')
+    print(f'Particle {measure} fraction [{fraction_unit}]: {M1_Vtot*100.0:.2f}')
+    print(f'Particle number density (per melt/matrix {measure}) [{density_unit}]: {scientific(M0_Vm)}')
+    print(f'Particle number density (per total {measure}) [{density_unit}]: {scientific(M0_Vtot)}')
 
-    # todo
-    # 1) momenti a partire da exceedance-based analysis
-    # 2) altri momenti utili?
-    # 3) salvare in tabella 
+    # Save the population properties alongside the fitting tables.
+    table_rows = [
+        ['Best distribution density', distribution_names[Id], ''],
+        ['Best exceedance function', distribution_names[Ie], ''],
+        [f'Average particle {measure} (density-based)', f'{M1_Nd:.3E}', measure_unit],
+        [f'Average particle {measure} (exceedance-based)', f'{M1_Ne:.3E}', measure_unit],
+        [f'Particle {measure} fraction', f'{M1_Vtot*100.0:.2f}', fraction_unit],
+        [f'Particle number density (per melt/matrix {measure})', scientific(M0_Vm), density_unit],
+        [f'Particle number density (per total {measure})', scientific(M0_Vtot), density_unit],
+    ]
+    table_path = os.path.join(rd, f'Properties_{num}.csv')
+    with open(table_path, 'w', newline='', encoding='utf-8') as table_file:
+        writer = csv.writer(table_file)
+        writer.writerows(table_rows[:2])
+        writer.writerow([])
+        writer.writerow(['Property', 'Value', 'Unit'])
+        writer.writerows(table_rows[2:])
 
     return X2d, X2e, Alphad, Nud, Nue, Sigmad, Sigmae

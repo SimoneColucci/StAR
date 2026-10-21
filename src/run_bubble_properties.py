@@ -129,6 +129,11 @@ def run_bubble_properties(measure_data, sample, method):
         plt.tight_layout()
         plt.savefig(fig_name, dpi=150, bbox_inches='tight')
 
+        best_fig = plt.figure(-(i + 1))
+        best_fig.tight_layout()
+        best_fig.savefig(os.path.join(rd_stat, f'Statistics_best_fit_{num_str}.png'),
+                         dpi=150, bbox_inches='tight')
+
         # ---- Fractal index (Otsuki, 1998) - optional --------------------
         if do_fractal:
             group_name = measure_data.get('group_names', [None] * n_groups)[i] \

@@ -1,5 +1,5 @@
 """
-Density-based statistical analysis of bubble / crystal size distributions.
+Density-based statistical analysis of particle size distributions.
 """
 
 import os
@@ -188,10 +188,10 @@ def density_based_analysis(v, sample_new, method, rd, idx, num, mtype,
     ax.bar(bin_centers, n_lin, width=np.diff(bin_edges)[0] * 0.8, color='steelblue', label='Data')
 
     if mtype[0] == '2D':
-        xlab = r'$\log_{10}(v)$, $v$ = bubble area (m$^2$)'
+        xlab = r'$\log_{10}(v)$, $v$ = particle area (m$^2$)'
         ylab = r'Linear number density $n(v)/(m^{2}\log_{10}(v))$'
     else:
-        xlab = r'$\log_{10}(v)$, $v$ = bubble volume (m$^3$)'
+        xlab = r'$\log_{10}(v)$, $v$ = particle volume (m$^3$)'
         ylab = r'Linear number density $n(v)/(m^{3}\log_{10}(v))$'
 
     xgrid = np.linspace(bin_centers.min() - 2, bin_centers.max() + 1, 100)
@@ -202,6 +202,26 @@ def density_based_analysis(v, sample_new, method, rd, idx, num, mtype,
     ax.legend()
     ax.set_xlabel(xlab)
     ax.set_ylabel(ylab)
+
+    # Additional figure: data and the distribution with the lowest chi-square.
+    best_index = int(np.argmin([x2_exp, x2_wei, x2_nor, x2_log]))
+    best_density, best_parameters, best_color, best_name = [
+        (exponential_density, p_exp, 'b', 'Exponential'),
+        (weibull_density, p_wei, 'r', 'Weibull'),
+        (normal_density, p_nor, 'k', 'Normal'),
+        (logistic_density, p_log, 'm', 'Logistic'),
+    ][best_index]
+    # Negative figure numbers keep these separate from the original group figures.
+    best_fig = plt.figure(-idx, figsize=(13.3, 5.3))
+    best_fig.patch.set_facecolor('white')
+    best_ax = best_fig.add_subplot(1, 2, 1)
+    best_ax.bar(bin_centers, n_lin, width=np.diff(bin_edges)[0] * 0.8,
+                color='steelblue', label='Data')
+    best_ax.plot(xgrid, best_density(best_parameters, xgrid), best_color,
+                 label=best_name)
+    best_ax.legend()
+    best_ax.set_xlabel(xlab)
+    best_ax.set_ylabel(ylab)
 
     # ---- Save table ---------------------------------------------------------
     table_data = {
