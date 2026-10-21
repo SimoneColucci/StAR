@@ -224,7 +224,8 @@ def exceedance_based_analysis(v, sample_new, method, rd, idx, num, mtype,
         (normal_exceedance, p_nor, 'k', 'Normal'),
         (logistic_exceedance, p_log, 'm', 'Logistic'),
     ][best_index]
-    best_fig = plt.figure(-idx, figsize=(13.3, 5.3))
+    best_fig = plt.figure(-idx)
+    best_fig.set_size_inches(13.3, 5.3)
     best_fig.patch.set_facecolor('white')
     best_ax = best_fig.add_subplot(1, 2, 2)
     best_ax.bar(bin_centers, Sprime, width=np.diff(bin_edges)[0] * 0.8,

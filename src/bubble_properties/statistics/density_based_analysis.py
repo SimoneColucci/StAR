@@ -181,7 +181,8 @@ def density_based_analysis(v, sample_new, method, rd, idx, num, mtype,
     p_log[0] /= Vnorm
 
     # ---- Plot ---------------------------------------------------------------
-    fig = plt.figure(idx, figsize=(13.3, 5.3))
+    fig = plt.figure(idx)
+    fig.set_size_inches(13.3, 5.3)
     fig.patch.set_facecolor('white')
     ax = fig.add_subplot(1, 2, 1)
 
@@ -212,7 +213,8 @@ def density_based_analysis(v, sample_new, method, rd, idx, num, mtype,
         (logistic_density, p_log, 'm', 'Logistic'),
     ][best_index]
     # Negative figure numbers keep these separate from the original group figures.
-    best_fig = plt.figure(-idx, figsize=(13.3, 5.3))
+    best_fig = plt.figure(-idx)
+    best_fig.set_size_inches(13.3, 5.3)
     best_fig.patch.set_facecolor('white')
     best_ax = best_fig.add_subplot(1, 2, 1)
     best_ax.bar(bin_centers, n_lin, width=np.diff(bin_edges)[0] * 0.8,
