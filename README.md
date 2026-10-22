@@ -53,7 +53,7 @@ tabs are filled in automatically (they remain fully editable).
 
 ## Requirements
 
-- Python ≥ 3.8
+- Python 3.10 (recommended)
 - numpy ≥ 1.21
 - scipy ≥ 1.7
 - matplotlib ≥ 3.5
@@ -62,16 +62,14 @@ tabs are filled in automatically (they remain fully editable).
 - Pillow ≥ 9.0
 - pyinstaller ≥ 5.0
 
-```bash
-pip install -r requirements.txt
-```
+The full installation currently requires Python 3.10. The
+`pysizeunfolder` dependency is known to be incompatible with Python 3.14;
+Python 3.11–3.13 have not been tested. If a newer Python version is installed
+on your computer, create the virtual environment explicitly with Python 3.10.
 
 The **Stereology** module additionally requires the `pysizeunfolder` package
-(from GitHub):
+from GitHub.
 
-```bash
-pip install git+https://github.com/thomasvdj/pysizeunfolder
-```
 ## Installation and usage
 
 ## CASE 1: WINDOWS
@@ -79,7 +77,7 @@ pip install git+https://github.com/thomasvdj/pysizeunfolder
 ### Step 1 – Install Python
 
 1. Go to https://www.python.org/downloads/
-2. Download **Python 3.8** or higher
+2. Download **Python 3.10**
 3. Run the installer
 4. **IMPORTANT**: check the **"Add Python to PATH"** box
 5. Click **Install Now**
@@ -138,10 +136,10 @@ downstream tabs are filled in automatically (but remain editable).
 ```
 cd C:\StAR\run
 notepad preprocess.py   # edit parameters
-python preprocess.py    # PreProcess (interactive windows)
-python analyze.py
-python stereology.py
-python properties.py
+py -3.10 preprocess.py  # PreProcess (interactive windows)
+py -3.10 analyze.py
+py -3.10 stereology.py
+py -3.10 properties.py
 ```
 
 ### Optional: build a distributable .exe
@@ -161,17 +159,28 @@ The executable will be created in `dist\StAR\StAR.exe`.
 
 ### Step 1 – Install Python and Tkinter
 
+Install Python 3.10 and Tkinter. The exact package names may vary depending
+on the Linux distribution.
+
 ```bash
 # Ubuntu / Debian
 sudo apt update
-sudo apt install python3 python3-pip python3-tk python3-venv
+sudo apt install python3.10 python3.10-venv python3-pip python3-tk
 
 # Fedora / RHEL
-sudo dnf install python3 python3-pip python3-tkinter
+sudo dnf install python3.10 python3-pip python3-tkinter
 
 # Arch
-sudo pacman -S python python-pip tk
+sudo pacman -S tk
 ```
+
+If Python 3.10 is not available from your distribution's repositories, use
+the Conda instructions above or install Python 3.10 separately before
+continuing.
+
+On macOS, install Python 3.10 from the official Python installer or use the
+Conda instructions above. Make sure that Tkinter is available for the Python
+3.10 installation before launching the GUI.
 
 ### Step 2 – Download and extract the project
 
@@ -184,25 +193,25 @@ cd StAR
 ### Step 3 – Install dependencies
 
 ```bash
-# Method A: globally (if the system allows it)
-pip3 install --upgrade pip
-pip3 install -r requirements.txt
+# Method A: globally (if the system allows it; a virtual environment is safer)
+python3.10 -m pip install --upgrade pip
+python3.10 -m pip install -r requirements.txt
 ```
 
 If you get `externally-managed-environment`:
 
 ```bash
 # Method B: virtual environment (**recommended**)
-python3 -m venv venv
+python3.10 -m venv venv
 source venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 ```
 
 The **Stereology** module also requires:
 
 ```bash
-pip install git+https://github.com/thomasvdj/pysizeunfolder
+python -m pip install git+https://github.com/thomasvdj/pysizeunfolder
 ```
 
 ### Step 4 – Launch the GUI
@@ -213,9 +222,10 @@ cd /path/to/StAR
 ```
 
 > If dependencies are not present, `StAR.sh` automatically creates a local
-> virtual environment (`venv/`) and installs everything there. You need the
-> `python3-venv` package (see Step 1). `tkinter` must be installed in the
-> system Python (`python3-tk`).
+> virtual environment (`venv/`) with Python 3.10 and installs everything
+> there. Python 3.10 must be installed and available on the command line.
+> You need the `python3.10-venv` package (see Step 1). Tkinter must be
+> installed for the Python 3.10 installation.
 
 Or manually:
 
@@ -239,10 +249,10 @@ downstream tabs are filled in automatically (but remain editable).
 ```bash
 cd run
 nano preprocess.py    # edit parameters
-python3 preprocess.py # PreProcess (interactive windows)
-python3 analyze.py
-python3 stereology.py
-python3 properties.py
+python3.10 preprocess.py # PreProcess (interactive windows)
+python3.10 analyze.py
+python3.10 stereology.py
+python3.10 properties.py
 ```
 
 ### Optional: build an executable
@@ -255,6 +265,24 @@ chmod +x build_linux.sh
 The executable will be created in `dist/StAR/StAR`.
 
 ---
+
+### Installation using Conda
+
+If you already use Anaconda or Miniconda, download or clone StAR, open a
+terminal in the project directory, and create an environment with Python 3.10:
+
+```bash
+conda create -n star python=3.10
+conda activate star
+python -m pip install -r requirements.txt
+python -m pip install git+https://github.com/thomasvdj/pysizeunfolder
+```
+
+Using Conda with Python 3.14 does not solve the compatibility issue; the
+environment must be created with Python 3.10.
+
+---
+
 ## Structure
 
 ```

@@ -6,18 +6,28 @@
 set -e
 cd "$(dirname "$0")"
 
-# Find a Python interpreter
+# Find a Python 3.10 interpreter. Prefer an existing local virtual
+# environment, then an activated Conda environment or a system interpreter.
+VENV_DIR="venv"
 PYTHON=""
-for cmd in python3 python; do
-    if command -v "$cmd" &>/dev/null && "$cmd" --version &>/dev/null; then
-        PYTHON="$cmd"
-        break
-    fi
-done
+PYTHON310_CHECK='import sys; raise SystemExit(0 if sys.version_info[:2] == (3, 10) else 1)'
+
+if [ -x "$VENV_DIR/bin/python" ] && \
+        "$VENV_DIR/bin/python" -c "$PYTHON310_CHECK" &>/dev/null; then
+    PYTHON="$VENV_DIR/bin/python"
+else
+    for cmd in python python3 python3.10; do
+        if command -v "$cmd" &>/dev/null && \
+                "$cmd" -c "$PYTHON310_CHECK" &>/dev/null; then
+            PYTHON="$cmd"
+            break
+        fi
+    done
+fi
 
 if [ -z "$PYTHON" ]; then
-    echo "ERROR: Python 3 not found."
-    echo "Install Python 3.9+ and tkinter, then run again."
+    echo "ERROR: Python 3.10 not found."
+    echo "Install Python 3.10 or activate a Python 3.10 environment, then run again."
     exit 1
 fi
 
@@ -32,10 +42,9 @@ if ! $PYTHON -c "import tkinter" 2>/dev/null; then
     exit 1
 fi
 
-# If the dependencies are not already available with the system Python,
+# If the dependencies are not already available with Python 3.10,
 # create/use a local virtual environment (this also handles a missing pip
 # and the "externally-managed-environment" error).
-VENV_DIR="venv"
 DEPS_CHECK="import numpy, scipy, matplotlib, pandas, skimage, PIL"
 
 if ! $PYTHON -c "$DEPS_CHECK" 2>/dev/null; then
@@ -44,9 +53,13 @@ if ! $PYTHON -c "$DEPS_CHECK" 2>/dev/null; then
         if ! $PYTHON -m venv "$VENV_DIR" 2>/dev/null; then
             echo "ERROR: could not create the virtual environment."
             echo "Install the venv package, for example:"
-            echo "  Ubuntu/Debian: sudo apt install python3-venv"
+            echo "  Ubuntu/Debian: sudo apt install python3.10-venv"
             exit 1
         fi
+    elif ! "$VENV_DIR/bin/python" -c "$PYTHON310_CHECK" &>/dev/null; then
+        echo "ERROR: the existing venv was not created with Python 3.10."
+        echo "Create a new venv with: python3.10 -m venv venv"
+        exit 1
     fi
 
     # Use the venv Python from now on
@@ -62,9 +75,14 @@ if ! $PYTHON -c "$DEPS_CHECK" 2>/dev/null; then
         $PYTHON -m pip install --upgrade pip
         $PYTHON -m pip install -r requirements.txt
     fi
-elif [ -d "$VENV_DIR" ]; then
+elif [ -x "$VENV_DIR/bin/python" ] && \
+        "$VENV_DIR/bin/python" -c "$PYTHON310_CHECK" &>/dev/null; then
     # A venv already exists: prefer it (keeps optional deps together).
     PYTHON="$VENV_DIR/bin/python"
+elif [ -d "$VENV_DIR" ]; then
+    echo "ERROR: the existing venv was not created with Python 3.10."
+    echo "Create a new venv with: python3.10 -m venv venv"
+    exit 1
 fi
 
 # Optional dependency for the Stereology module (not on PyPI, needs git).
