@@ -940,7 +940,7 @@ class StereologyTab(GroupTreeTab):
 
     def _build_options(self):
         self._info.configure(
-            text=('Stereological conversion of the 2D measures into 3D size distributions.'))
+            text=('Stereological conversion of the 2D measures into 3D size distributions, assuming spherical particles.'))
 
     def _supports_edit(self):
         return False
