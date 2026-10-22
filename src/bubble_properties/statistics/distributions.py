@@ -152,15 +152,19 @@ def weibull_moments(p,n):
     mom = mu**(n)*math.gamma(1+n/kappa)
     return mom
 
-def normal_moments(p,n):
-    """Normal distribution moments."""
+def lognormal_moments(p,n):
+    """Log-normal distribution moments for a base-10 logarithmic variable."""
     nu = p[1]
     sigma = p[2]
-    mom = math.exp(n*nu + 0.5*n*n*sigma*sigma)
+    ln10 = math.log(10)
+    mom = math.exp(
+        n * ln10 * nu
+        + 0.5 * (n * ln10 * sigma)**2
+    )
     return mom
 
-def logistic_moments(p,n):
-    """Logistic distribution moments."""
+def loglogistic_moments(p,n):
+    """Log-Logistic distribution moments."""
     mu = 10.0**p[1]
     kappa = 1.0 / (np.log(10) * p[2])
     if n == 0:
