@@ -340,3 +340,6 @@ StAR/
 
 - **JPG** – Starting Images 
 - **CSV** files only for running modules independently (not in succession)
+
+## Authors
+Simone Colucci, Roberto Crola
