@@ -62,7 +62,7 @@ def bubble_properties(bubble_dim, sample_new, method, rd, idx, num, mtype,
 
     not_defined = 'not defined (n>=k)'
 
-    def calculate_moment(moment_function, parameters, order=1):
+    def calculate_moment(moment_function, parameters, order):
         """Return a moment, or a marker when the logistic moment diverges."""
         try:
             return moment_function(parameters, order)
@@ -81,7 +81,7 @@ def bubble_properties(bubble_dim, sample_new, method, rd, idx, num, mtype,
     else:
         moment_parameters_d = [0.0, Nud[Id], Sigmad[Id]]
 
-    M1_Nd = calculate_moment(moment_function, moment_parameters_d)  # V_p/N
+    M1_Nd = calculate_moment(moment_function, moment_parameters_d, 1)  # V_p/N
     if M1_Nd is None:
         M1_Vm = Phi = M1_Vtot = None
     else:
@@ -99,7 +99,7 @@ def bubble_properties(bubble_dim, sample_new, method, rd, idx, num, mtype,
     else:
         moment_parameters_e = [0.0, Nue[Ie], Sigmae[Ie]]
 
-    M1_Ne = calculate_moment(moment_function, moment_parameters_e)  # V_p/N
+    M1_Ne = calculate_moment(moment_function, moment_parameters_e, 1)  # V_p/N
 
     # Print results
     def scientific(value):
