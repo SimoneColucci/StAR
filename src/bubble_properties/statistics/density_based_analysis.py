@@ -229,7 +229,7 @@ def density_based_analysis(v, sample_new, method, rd, idx, num, mtype,
     table_data = {
         'Distribution': ['Exponential', 'Weibull', 'Normal', 'Logistic'],
         'chi2':  [x2_exp, x2_wei, x2_nor, x2_log],
-        'alpha': [p_exp[0], p_wei[0], p_nor[0], p_log[0]],
+        'N':     [p_exp[0], p_wei[0], p_nor[0], p_log[0]],
         'nu':    [p_exp[1], p_wei[1], p_nor[1], p_log[1]],
         'sigma': ['', p_wei[2], p_nor[2], p_log[2]],
     }
