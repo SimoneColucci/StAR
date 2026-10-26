@@ -29,7 +29,7 @@ done
 echo "=== StAR cleanAll (in $(pwd)) ==="
 
 # --- PyInstaller build products / executables ----------------------------
-rm -rf build dist
+rm -rf build dist dist_linux dist_windows
 # --- Python byte-compiled caches -----------------------------------------
 find . -type d -name '__pycache__' -prune -exec rm -rf {} + 2>/dev/null || true
 find . -type f \( -name '*.pyc' -o -name '*.pyo' \) -delete 2>/dev/null || true
@@ -40,7 +40,7 @@ rm -rf .pytest_cache .mypy_cache .ruff_cache *.egg-info
 find . -type f \( -name '*~' -o -name '*.swp' -o -name '*.tmp' -o -name '*.bak' \) -delete 2>/dev/null || true
 find . -type f -name '.DS_Store' -delete 2>/dev/null || true
 
-echo "Removed: build/, dist/, __pycache__/, *.pyc/*.pyo, .ipynb_checkpoints/, caches, temp files."
+echo "Removed: build/, dist/, dist_linux/, dist_windows/, __pycache__/, *.pyc/*.pyo, .ipynb_checkpoints/, caches, temp files."
 
 # --- Optional: virtual environment ---------------------------------------
 if [ "$REMOVE_VENV" -eq 1 ]; then

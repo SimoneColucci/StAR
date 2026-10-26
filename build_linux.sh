@@ -55,14 +55,14 @@ fi
 
 # --- 2. Create virtual environment (avoids externally-managed error) ---
 echo
-echo "[1/4] Preparing virtual environment..."
+echo "[1/3] Preparing virtual environment..."
 if [ ! -d "venv" ]; then
     $PYTHON -m venv venv
 fi
 source venv/bin/activate
 
 # --- 3. Install Python dependencies ---
-echo "[2/4] Installing dependencies..."
+echo "[2/3] Installing dependencies..."
 python -m pip install --upgrade pip
 python -m pip install numpy scipy matplotlib pandas scikit-image Pillow pyinstaller
 # Stereology module (optional): requires pysizeunfolder from GitHub (needs git)
@@ -71,23 +71,16 @@ python -m pip install "git+https://github.com/thomasvdj/pysizeunfolder" || \
 
 # --- 4. Build with PyInstaller ---
 echo
-echo "[3/4] Building executable..."
-python -m PyInstaller StAR.spec --noconfirm
-
-# --- 5. Copy example data files ---
-echo
-echo "[4/4] Copying example data..."
-if [ -d "data" ]; then
-    cp -r data dist/StAR/
-fi
+echo "[3/3] Building executable..."
+python -m PyInstaller StAR.spec --noconfirm --distpath dist_linux
 
 # Make it executable
-chmod +x dist/StAR/StAR
+chmod +x dist_linux/StAR/StAR
 
 echo
 echo "========================================="
 echo "  Build completed!"
-echo "  The application is in: dist/StAR/"
-echo "  Executable: dist/StAR/StAR"
+echo "  The application is in: dist_linux/StAR/"
+echo "  Executable: dist_linux/StAR/StAR"
 echo "========================================="
 echo

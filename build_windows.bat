@@ -92,7 +92,7 @@ if errorlevel 1 (
 REM 3. Build with PyInstaller
 echo.
 echo [3/4] Building executable...
-%PYTHON% -m PyInstaller StAR.spec --noconfirm
+%PYTHON% -m PyInstaller StAR.spec --noconfirm --distpath dist_windows
 if errorlevel 1 (
     echo ERROR: build failed.
     pause
@@ -103,14 +103,14 @@ REM 4. Copy example data files
 echo.
 echo [4/4] Copying example data...
 if exist "data" (
-    xcopy /E /I /Y "data" "dist\StAR\data"
+    xcopy /E /I /Y "data" "dist_windows\StAR\data"
 )
 
 echo.
 echo =========================================
 echo  Build completed!
-echo  The application is in: dist\StAR\
-echo  Executable: dist\StAR\StAR.exe
+echo  The application is in: dist_windows\StAR\
+echo  Executable: dist_windows\StAR\StAR.exe
 echo =========================================
 echo.
 pause

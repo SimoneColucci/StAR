@@ -151,7 +151,12 @@ cd C:\StAR
 build_windows.bat
 ```
 
-The executable will be created in `dist\StAR\StAR.exe`.
+The executable will be created in `dist_windows\StAR\StAR.exe`.
+
+To distribute the Windows application, copy the **entire `dist_windows` folder**,
+including `StAR\_internal`, and preserve its directory structure. The
+`_internal` folder contains the Python runtime, libraries, and resources
+required by the executable; copying only `StAR.exe` is not sufficient.
 
 ---
 
@@ -262,7 +267,12 @@ chmod +x build_linux.sh
 ./build_linux.sh
 ```
 
-The executable will be created in `dist/StAR/StAR`.
+The executable will be created in `dist_linux/StAR/StAR`.
+
+To distribute the Linux application, copy the **entire `dist_linux` folder**,
+including `StAR/_internal`, and preserve its directory structure. The
+`_internal` folder contains the Python runtime, libraries, and resources
+required by the executable; copying only the `StAR` executable is not sufficient.
 
 ---
 
