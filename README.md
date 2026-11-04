@@ -53,6 +53,18 @@ tabs are filled in automatically (they remain fully editable).
 
 ## Requirements
 
+### System requirements
+
+- Git, required to install the optional `pysizeunfolder` dependency for the
+  **Stereology** module
+- A C/C++ compiler, which may be required to build `pysizeunfolder` or other
+  native Python dependencies from source
+
+These tools are not required when using only the basic StAR modules without
+the optional **Stereology** module.
+
+### Python requirements
+
 - Python 3.10 (recommended)
 - numpy ≥ 1.21
 - scipy ≥ 1.7
@@ -67,12 +79,18 @@ The full installation currently requires Python 3.10. The
 Python 3.11–3.13 have not been tested. If a newer Python version is installed
 on your computer, create the virtual environment explicitly with Python 3.10.
 
-The **Stereology** module additionally requires the `pysizeunfolder` package
-from GitHub.
-
 ## Installation and usage
 
 ## CASE 1: WINDOWS
+
+### Step 0 – Install Git and the C/C++ compiler toolchain (for Stereology)
+
+1. Install **Git for Windows** from https://git-scm.com/download/win
+2. Install the **Visual C++ Build Tools** (the Microsoft MSVC compiler) from
+   https://visualstudio.microsoft.com/visual-cpp-build-tools/
+3. In the Visual Studio Installer, select the **Desktop development with C++**
+   workload. This installs the MSVC compiler, Windows SDK and the required
+   build tools. Then complete the installation.
 
 ### Step 1 – Install Python
 
@@ -105,6 +123,18 @@ The **Stereology** module additionally requires:
 python -m pip install git+https://github.com/thomasvdj/pysizeunfolder
 ```
 
+#### Alternative installation using Conda
+
+If you already use Anaconda or Miniconda, download or clone StAR, open a
+terminal in the project directory, and create an environment with Python 3.10:
+
+```bash
+conda create -n star python=3.10
+conda activate star
+python -m pip install -r requirements.txt
+python -m pip install git+https://github.com/thomasvdj/pysizeunfolder
+```
+
 ### Step 4 – Launch the GUI
 
 ```
@@ -118,6 +148,10 @@ Or:
 cd C:\StAR
 python star_gui.py
 ```
+
+> `StAR.bat` requires Python 3.10 to be installed and available on the
+> command line. It installs missing dependencies directly into that Python
+> installation and does not create a virtual environment automatically.
 
 ### Step 5 – Using the GUI
 
@@ -162,6 +196,46 @@ required by the executable; copying only `StAR.exe` is not sufficient.
 
 ## CASE 2: LINUX / macOS
 
+### Step 0 – Install Git and the C/C++ compiler toolchain (for Stereology)
+
+On Ubuntu/Debian:
+
+```bash
+sudo apt update
+sudo apt install git build-essential   # Git, GCC/G++, make and standard headers
+```
+
+On Fedora/RHEL:
+
+```bash
+sudo dnf install git gcc-c++ make       # Git, GCC/G++ and make
+```
+
+On Arch Linux:
+
+```bash
+sudo pacman -S git base-devel           # Git, GCC/G++, make and standard headers
+```
+
+On macOS, install Git and Apple Clang with the command-line developer tools.
+Git is included with the Xcode Command Line Tools:
+
+```bash
+xcode-select --install
+```
+
+Alternatively, install Git separately with Homebrew:
+
+```bash
+brew install git
+```
+
+Verify that Git is available:
+
+```bash
+git --version
+```
+
 ### Step 1 – Install Python and Tkinter
 
 Install Python 3.10 and Tkinter. The exact package names may vary depending
@@ -180,11 +254,11 @@ sudo pacman -S tk
 ```
 
 If Python 3.10 is not available from your distribution's repositories, use
-the Conda instructions above or install Python 3.10 separately before
+the Conda instructions below or install Python 3.10 separately before
 continuing.
 
 On macOS, install Python 3.10 from the official Python installer or use the
-Conda instructions above. Make sure that Tkinter is available for the Python
+Conda instructions below. Make sure that Tkinter is available for the Python
 3.10 installation before launching the GUI.
 
 ### Step 2 – Download and extract the project
@@ -203,7 +277,8 @@ python3.10 -m pip install --upgrade pip
 python3.10 -m pip install -r requirements.txt
 ```
 
-If you get `externally-managed-environment`:
+If you get `externally-managed-environment`, use the recommended virtual
+environment method below.
 
 ```bash
 # Method B: virtual environment (**recommended**)
@@ -216,6 +291,18 @@ python -m pip install -r requirements.txt
 The **Stereology** module also requires:
 
 ```bash
+python -m pip install git+https://github.com/thomasvdj/pysizeunfolder
+```
+
+#### Alternative installation using Conda
+
+If you already use Anaconda or Miniconda, download or clone StAR, open a
+terminal in the project directory, and create an environment with Python 3.10:
+
+```bash
+conda create -n star python=3.10
+conda activate star
+python -m pip install -r requirements.txt
 python -m pip install git+https://github.com/thomasvdj/pysizeunfolder
 ```
 
@@ -273,23 +360,6 @@ To distribute the Linux application, copy the **entire `dist_linux` folder**,
 including `StAR/_internal`, and preserve its directory structure. The
 `_internal` folder contains the Python runtime, libraries, and resources
 required by the executable; copying only the `StAR` executable is not sufficient.
-
----
-
-### Installation using Conda
-
-If you already use Anaconda or Miniconda, download or clone StAR, open a
-terminal in the project directory, and create an environment with Python 3.10:
-
-```bash
-conda create -n star python=3.10
-conda activate star
-python -m pip install -r requirements.txt
-python -m pip install git+https://github.com/thomasvdj/pysizeunfolder
-```
-
-Using Conda with Python 3.14 does not solve the compatibility issue; the
-environment must be created with Python 3.10.
 
 ---
 
