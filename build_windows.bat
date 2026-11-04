@@ -11,42 +11,27 @@ echo === StAR Windows Build ===
 echo.
 
 REM 0. Look for Python (make sure it really works, not the Microsoft Store stub)
-set PYTHON=
+set "PYTHON_EXE="
+set "PYTHON_ARGS="
 
 py -3 --version >nul 2>&1
-if not errorlevel 1 (
-    set PYTHON=py -3
-    goto :found
-)
+if not errorlevel 1 goto :found_py
 
 python --version >nul 2>&1
-if not errorlevel 1 (
-    set PYTHON=python
-    goto :found
-)
+if not errorlevel 1 goto :found_python
 
-REM Try common installation paths
-for %%P in (
-    "%LOCALAPPDATA%\Programs\Python\Python313\python.exe"
-    "%LOCALAPPDATA%\Programs\Python\Python312\python.exe"
-    "%LOCALAPPDATA%\Programs\Python\Python311\python.exe"
-    "%LOCALAPPDATA%\Programs\Python\Python310\python.exe"
-    "%LOCALAPPDATA%\Programs\Python\Python39\python.exe"
-    "C:\Python313\python.exe"
-    "C:\Python312\python.exe"
-    "C:\Python311\python.exe"
-    "C:\Python310\python.exe"
-    "C:\Python39\python.exe"
-) do (
-    if exist %%~P (
-        %%~P --version >nul 2>&1
-        if not errorlevel 1 (
-            set "PYTHON=%%~P"
-            goto :found
-        )
-    )
-)
+goto :python_missing
 
+:found_py
+set "PYTHON_EXE=py"
+set "PYTHON_ARGS=-3"
+goto :found
+
+:found_python
+set "PYTHON_EXE=python"
+goto :found
+
+:python_missing
 echo.
 echo ================================================================
 echo  ERROR: Python is not installed on this PC!
@@ -66,45 +51,35 @@ pause
 exit /b 1
 
 :found
-echo Python found: %PYTHON%
-%PYTHON% --version
+echo Python found: %PYTHON_EXE% %PYTHON_ARGS%
+"%PYTHON_EXE%" %PYTHON_ARGS% --version
 echo.
 
 REM 1. Install dependencies
 echo [1/4] Installing dependencies...
-%PYTHON% -m pip install --upgrade pip
-%PYTHON% -m pip install numpy scipy matplotlib pandas scikit-image Pillow pyinstaller
-if errorlevel 1 (
-    echo ERROR: dependency installation failed.
-    pause
-    exit /b 1
-)
+call "%PYTHON_EXE%" %PYTHON_ARGS% -m pip install --upgrade pip
+call "%PYTHON_EXE%" %PYTHON_ARGS% -m pip install numpy scipy matplotlib pandas scikit-image Pillow pyinstaller
+if errorlevel 1 goto :dependency_error
 
 REM 2. Stereology module (optional): requires pysizeunfolder from GitHub (needs git)
 echo.
 echo [2/4] Installing pysizeunfolder (Stereology module, optional)...
-%PYTHON% -m pip install "git+https://github.com/thomasvdj/pysizeunfolder"
-if errorlevel 1 (
-    echo WARNING: pysizeunfolder not installed (Stereology module unavailable).
-    echo          It requires git (https://git-scm.com/download/win^).
-)
+call "%PYTHON_EXE%" %PYTHON_ARGS% -m pip install "git+https://github.com/thomasvdj/pysizeunfolder"
+if errorlevel 1 echo WARNING: pysizeunfolder not installed (Stereology module unavailable).
+if errorlevel 1 echo          It requires git (https://git-scm.com/download/win^).
 
 REM 3. Build with PyInstaller
 echo.
 echo [3/4] Building executable...
-%PYTHON% -m PyInstaller StAR.spec --noconfirm --distpath dist_windows
-if errorlevel 1 (
-    echo ERROR: build failed.
-    pause
-    exit /b 1
-)
+call "%PYTHON_EXE%" %PYTHON_ARGS% -m PyInstaller StAR.spec --noconfirm --distpath dist_windows
+if errorlevel 1 goto :build_error
 
 REM 4. Copy example data files
 echo.
 echo [4/4] Copying example data...
-if exist "data" (
-    xcopy /E /I /Y "data" "dist_windows\StAR\data"
-)
+if exist "data" xcopy /E /I /Y "data" "dist_windows\StAR\data"
+
+if not exist "dist_windows\StAR\StAR.exe" goto :output_error
 
 echo.
 echo =========================================
@@ -114,3 +89,19 @@ echo  Executable: dist_windows\StAR\StAR.exe
 echo =========================================
 echo.
 pause
+exit /b 0
+
+:dependency_error
+echo ERROR: dependency installation failed.
+pause
+exit /b 1
+
+:build_error
+echo ERROR: build failed.
+pause
+exit /b 1
+
+:output_error
+echo ERROR: PyInstaller completed but the executable was not found.
+pause
+exit /b 1
