@@ -123,8 +123,19 @@ def exceedance_based_analysis(v, sample_new, method, rd, idx, num, mtype,
             * np.array(sample_new['px2m'])**2)
     Vtot = Vtot[idx_sorted]
     Vm = Vtot - sumv  # Matrix volume (area for 2D measurements)
-    if np.any(~np.isfinite(Vm) | (Vm <= 0)):
-        raise ValueError('Matrix volume/area must be finite and strictly positive.')
+    invalid = ~np.isfinite(Vm) | (Vm <= 0)
+    if np.any(invalid):
+        details = []
+        for j in np.flatnonzero(invalid):
+            original = int(idx_sorted[j]) + 1
+            details.append(
+                f'file {original}: Vtot={Vtot[j]:.6g}, '
+                f'particles={sumv[j]:.6g}, matrix={Vm[j]:.6g}')
+        raise ValueError(
+            'Matrix volume/area must be finite and strictly positive.\n'
+            'Check cropArea [pixel²], m/pixel and (for 3D data) depth D. '
+            'The total particle area/volume cannot be greater than the '
+            'sample area/volume.\n' + '; '.join(details))
     rho = np.zeros(Nm)
 
     for j in range(Nm):
