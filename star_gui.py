@@ -921,6 +921,8 @@ class AnalyzeTab(GroupTreeTab):
                 im['measure_file'] = os.path.join(
                     measure_dir, f'measurementsTable_{k + 1:03d}.csv')
                 im['stereo_file'] = None
+                im['type'] = '2D'
+                im['D'] = None
             self.app.reload_all()
             messagebox.showinfo(
                 'Done', 'Analyze completed.\nThe Stereology and Properties '
