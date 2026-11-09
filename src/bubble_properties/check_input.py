@@ -3,6 +3,7 @@ Input validation for bubble properties analysis.
 """
 
 import os
+import math
 
 
 def check_input_properties(measure_data, sample, method):
@@ -48,6 +49,22 @@ def check_input_properties(measure_data, sample, method):
             if not isinstance(val, (int, float)):
                 raise TypeError('All entries in sample.crop_area must be numbers.')
 
+    # These quantities are used as denominators or as geometric measures in
+    # the statistical models.  Accepting zero, infinity or NaN here leads to
+    # a much less informative failure later in the exceedance calculation.
+    for i, group in enumerate(sample['px2m']):
+        for j, val in enumerate(group):
+            if not math.isfinite(float(val)) or float(val) <= 0:
+                raise ValueError(
+                    f'sample.px2m[{i}][{j}] must be finite and strictly '
+                    f'positive; got {val!r}.')
+    for i, group in enumerate(sample['crop_area']):
+        for j, val in enumerate(group):
+            if not math.isfinite(float(val)) or float(val) <= 0:
+                raise ValueError(
+                    f'sample.crop_area[{i}][{j}] must be finite and '
+                    f'strictly positive; got {val!r}.')
+
     if method['minsearch'] not in ('fmincon', 'simplex'):
         raise ValueError(
             f"Invalid method.minsearch '{method['minsearch']}'.\n"
@@ -67,6 +84,11 @@ def check_input_properties(measure_data, sample, method):
                 if 'D' not in sample or not sample['D']:
                     filepath = os.path.join(measure_data['input_dir'], fname)
                     raise ValueError(f"sample.D not provided for sample '{filepath}'")
+                depth = sample['D'][i][j]
+                if not math.isfinite(float(depth)) or float(depth) <= 0:
+                    raise ValueError(
+                        f'sample.D[{i}][{j}] must be finite and strictly '
+                        f'positive; got {depth!r}.')
 
     # ---- Dimension consistency ----------------------------------------------
     base_structure = [len(g) for g in measure_data['input_file']]
