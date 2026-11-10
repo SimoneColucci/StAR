@@ -36,11 +36,15 @@ def convert_measurement(my_measurement_path, output_dir=None):
 
     my_measurement_data = pd.read_csv(str(full_path))
     diam_array = my_measurement_data['EquivDiameter'].to_numpy()
-    diam_2D = np.unique(diam_array)
+    # Keep every observed profile.  Repeated equivalent diameters carry
+    # statistical weight and must not be collapsed before unfolding.
+    diam_2D = diam_array
     sample = (diam_2D ** 2) * 1. / 4. * np.pi
 
     # Estimate the underlying size distribution CDF using the sample of
     # observed section areas
+    # Keep the length-biased estimate for now.  The inverse size-bias
+    # correction requires a separately validated regularization step.
     xcdf_est, ycdf_est = estimate_size(sample, debias=False)
 
     # For plotting with the matplotlib step function, we need to add some
