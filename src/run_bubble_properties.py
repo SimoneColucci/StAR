@@ -108,7 +108,11 @@ def run_bubble_properties(measure_data, sample, method):
                 sample_new['Depth'][j] = 1.0
                 bubble_dim[j] = (np.pi / 4.0) * equiv_diam**2
             elif t == '3Dstereo':
-                sample_new['Depth'][j] = np.mean(equiv_diam)
+                # Stereology reconstructs a 3-D size distribution from
+                # profiles observed on a 2-D section.  No physical sample
+                # depth is available from that correction, so keep the
+                # analysis normalized per unit section area.
+                sample_new['Depth'][j] = 1.0
                 bubble_dim[j] = (1.0 / 6.0) * np.pi * equiv_diam**3
 
             sample_new['Area'][j] = sample['crop_area'][i][j]

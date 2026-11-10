@@ -65,6 +65,7 @@ def density_based_analysis(v, sample_new, method, rd, idx, num, mtype,
             'Cannot combine datasets with different measurement types: '
             f'{mtype}.'
         )
+    is_stereo = mtype[0] == '3Dstereo'
 
     # ---- Validate interval ordering ----------------------------------------
     # The subsequent overlap-removal logic assumes intervals that are:
@@ -122,6 +123,15 @@ def density_based_analysis(v, sample_new, method, rd, idx, num, mtype,
             * np.array(sample_new['px2m'])**2)
     Vtot = Vtot[idx_sorted]
 
+    if is_stereo:
+        # Stereological sizes are reconstructed from 2-D profiles, but no
+        # physical sample depth is known.  Use the section area as the
+        # normalization measure, yielding an areal density of reconstructed
+        # particle volumes per log10(volume).
+        normalization_measure = Vtot
+    else:
+        normalization_measure = Vtot - sumv  # Melt/matrix volume or area
+
     last_n = None
     for j in range(Nm):
         edges_j = bin_edges[Il_new[j]:Ir_new[j] + 1]   # +1: Python slicing
@@ -139,9 +149,9 @@ def density_based_analysis(v, sample_new, method, rd, idx, num, mtype,
             n[-1] -= np.count_nonzero(boundary_mask)
 
         diffs = np.diff(edges_j)
-        Vm = Vtot[j] - sumv[j]  # Melt/matrix volume (i.e., particle free volume)
-        n_lin_array.append(n / (Vm * diffs))
-        sigma_array.append(np.sqrt(np.maximum(0, n)) / (Vm * diffs))
+        denominator = normalization_measure[j] * diffs
+        n_lin_array.append(n / denominator)
+        sigma_array.append(np.sqrt(np.maximum(0, n)) / denominator)
         last_n = n
 
     n_lin = np.concatenate(n_lin_array)
@@ -191,6 +201,9 @@ def density_based_analysis(v, sample_new, method, rd, idx, num, mtype,
 
     if mtype[0] == '2D':
         xlab = r'$\log_{10}(v)$, $v$ = particle area (m$^2$)'
+        ylab = r'Linear number density $n(v)/(m^{2}\log_{10}(v))$'
+    elif is_stereo:
+        xlab = r'$\log_{10}(v)$, $v$ = particle volume (m$^3$)'
         ylab = r'Linear number density $n(v)/(m^{2}\log_{10}(v))$'
     else:
         xlab = r'$\log_{10}(v)$, $v$ = particle volume (m$^3$)'

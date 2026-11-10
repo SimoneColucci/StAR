@@ -122,17 +122,26 @@ def exceedance_based_analysis(v, sample_new, method, rd, idx, num, mtype,
             * np.array(sample_new['Area'])
             * np.array(sample_new['px2m'])**2)
     Vtot = Vtot[idx_sorted]
-    Vm = Vtot - sumv  # Matrix volume (area for 2D measurements)
-    invalid = ~np.isfinite(Vm) | (Vm <= 0)
+    is_stereo = mtype[0] == '3Dstereo'
+    if is_stereo:
+        # No physical depth is available after stereological correction.
+        # Normalize the reconstructed sizes by the observed section area.
+        normalization_measure = Vtot
+    else:
+        normalization_measure = Vtot - sumv  # Matrix volume/area
+
+    invalid = (~np.isfinite(normalization_measure)
+               | (normalization_measure <= 0))
     if np.any(invalid):
         details = []
         for j in np.flatnonzero(invalid):
             original = int(idx_sorted[j]) + 1
             details.append(
                 f'file {original}: Vtot={Vtot[j]:.6g}, '
-                f'particles={sumv[j]:.6g}, matrix={Vm[j]:.6g}')
+                f'particles={sumv[j]:.6g}, '
+                f'normalization={normalization_measure[j]:.6g}')
         raise ValueError(
-            'Matrix volume/area must be finite and strictly positive.\n'
+            'The normalization volume/area must be finite and strictly positive.\n'
             'Check cropArea [pixel²], m/pixel and (for 3D data) depth D. '
             'The total particle area/volume cannot be greater than the '
             'sample area/volume.\n' + '; '.join(details))
@@ -165,7 +174,7 @@ def exceedance_based_analysis(v, sample_new, method, rd, idx, num, mtype,
         Sp_j = np.flip(np.cumsum(np.flip(n))) / np.sum(n)
         sigma_array.append(sigma_j)
         Sprime_array.append(Sp_j)
-        rho[j] = np.sum(n) / Vm[j]
+        rho[j] = np.sum(n) / normalization_measure[j]
 
     # Weight each interval and include all subsequent intervals
     w = rho / np.sum(rho)

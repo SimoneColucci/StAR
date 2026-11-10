@@ -82,15 +82,24 @@ def bubble_properties(bubble_dim, sample_new, method, rd, idx, num, mtype,
         moment_parameters_d = [0.0, Nud[Id], Sigmad[Id]]
 
     M1_Nd = calculate_moment(moment_function, moment_parameters_d, 1)  # V_p/N
-    if M1_Nd is None:
+    is_stereo = mtype[0] == '3Dstereo'
+    if is_stereo:
+        # The stereological correction estimates a 3-D size distribution from
+        # 2-D profiles, but does not provide a physical sample depth or an
+        # absolute 3-D particle number density.  Only distribution fits and
+        # mean reconstructed particle volume are meaningful here.
         M1_Vm = Phi = M1_Vtot = None
+        M0_Vm = M0_Vtot = None
+    elif M1_Nd is None:
+        M1_Vm = Phi = M1_Vtot = None
+        M0_Vm = Alphad[Id]
+        M0_Vtot = None
     else:
         M1_Vm = M1_Nd*Alphad[Id]                       # V_p/V_m
         Phi = 1.0/(1.0+M1_Vm)                         # V_melt/V_tot
         M1_Vtot = M1_Vm*Phi                           # V_p/V_tot
-
-    M0_Vm = Alphad[Id]                                 # BND/CND per melt/matrix Volume
-    M0_Vtot = None if Phi is None else M0_Vm*Phi        # BND/CND per total volume
+        M0_Vm = Alphad[Id]                             # BND/CND per melt/matrix volume
+        M0_Vtot = M0_Vm*Phi                            # BND/CND per total volume
 
     Ie = int(X2e.argmin())
     moment_function = moment_functions[Ie]
@@ -116,9 +125,14 @@ def bubble_properties(bubble_dim, sample_new, method, rd, idx, num, mtype,
     print(f'Best distribution density: {distribution_names[Id]}')
     print(f'Best exceedance function: {distribution_names[Ie]}')
     print(f'Average particle {measure} [{measure_unit}]: {format_value(M1_Nd, ".3E")} (density-based) - {format_value(M1_Ne, ".3E")} (exceedance-based)')
-    print(f'Particle {measure} fraction [{fraction_unit}]: {not_defined if M1_Vtot is None else f"{M1_Vtot*100.0:.2f}"}')
-    print(f'Particle number density (per melt/matrix {measure}) [{density_unit}]: {scientific(M0_Vm)}')
-    print(f'Particle number density (per total {measure}) [{density_unit}]: {not_defined if M0_Vtot is None else scientific(M0_Vtot)}')
+    if is_stereo:
+        print('Volumetric properties are not calculated for stereologically '
+              'corrected data: the physical sample depth and absolute 3-D '
+              'number density are unavailable.')
+    else:
+        print(f'Particle {measure} fraction [{fraction_unit}]: {not_defined if M1_Vtot is None else f"{M1_Vtot*100.0:.2f}"}')
+        print(f'Particle number density (per melt/matrix {measure}) [{density_unit}]: {scientific(M0_Vm)}')
+        print(f'Particle number density (per total {measure}) [{density_unit}]: {not_defined if M0_Vtot is None else scientific(M0_Vtot)}')
 
     # Save the population properties alongside the fitting tables.
     table_rows = [
@@ -126,10 +140,19 @@ def bubble_properties(bubble_dim, sample_new, method, rd, idx, num, mtype,
         ['Best exceedance function', distribution_names[Ie], ''],
         [f'Average particle {measure} (density-based)', format_value(M1_Nd, '.3E'), measure_unit],
         [f'Average particle {measure} (exceedance-based)', format_value(M1_Ne, '.3E'), measure_unit],
-        [f'Particle {measure} fraction', not_defined if M1_Vtot is None else f'{M1_Vtot*100.0:.2f}', fraction_unit],
-        [f'Particle number density (per melt/matrix {measure})', scientific(M0_Vm), density_unit],
-        [f'Particle number density (per total {measure})', not_defined if M0_Vtot is None else scientific(M0_Vtot), density_unit],
     ]
+    if is_stereo:
+        table_rows.append([
+            'Volumetric properties',
+            'Not calculated for stereologically corrected data',
+            '',
+        ])
+    else:
+        table_rows.extend([
+            [f'Particle {measure} fraction', not_defined if M1_Vtot is None else f'{M1_Vtot*100.0:.2f}', fraction_unit],
+            [f'Particle number density (per melt/matrix {measure})', scientific(M0_Vm), density_unit],
+            [f'Particle number density (per total {measure})', not_defined if M0_Vtot is None else scientific(M0_Vtot), density_unit],
+        ])
     table_path = os.path.join(rd, f'Properties_{num}.csv')
     with open(table_path, 'w', newline='', encoding='utf-8') as table_file:
         writer = csv.writer(table_file)
